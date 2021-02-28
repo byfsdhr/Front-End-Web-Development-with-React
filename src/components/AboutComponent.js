@@ -2,13 +2,14 @@ import React from 'react';
 import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Media } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
+
 function RenderLeader({ leaders }) {
 
     const leadersDetail = leaders.map((leader) => {
         return (
             <Media tag="li" className="mt-3">
                 <Media left middle>
-                    <Media object src={leader.image} alt={leader.name} />
+                    <Media object src={ leader.image} alt={leader.name} />
                 </Media>
                 <Media body className="ml-5">
                     <Media heading>
