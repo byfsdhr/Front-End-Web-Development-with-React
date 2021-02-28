@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import {
     Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem, Button,
-    Modal, Input, ModalBody, ModalHeader, Row, Label, Col
+    Modal, ModalBody, ModalHeader, Row, Label,
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, Errors, LocalForm } from 'react-redux-form';
+import { Loading } from './LoadingComponent';
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
@@ -29,9 +30,7 @@ class CommentForm extends Component {
 
     handleNewComment(values) {
         this.toggleModel();
-        // alert("Current state is : " + JSON.stringify(values));
-        alert("Rating : " + values.rating + " Your name: " + values.name + " Comment: " + values.comment);
-        // values.preventDefault();
+        this.props.addComment(this.props.dishId, values.rating, values.name, values.comment);
     }
 
     render() {
@@ -52,11 +51,12 @@ class CommentForm extends Component {
 
                                     <Label htmlFor="rating">Rating</Label>
                                     <Control.select
-                                        model=".rating" id="rating" name="rating" 
+                                        model=".rating" id="rating" name="rating"
                                         className="form-control"
                                         validators={{
                                             required
                                         }}>
+                                        <option selected>Please select</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -145,10 +145,9 @@ function RenderDish({ dish }) {
     )
 }
 
-function RenderComments({ comments }) {
+function RenderComments({ comments, addComment, dishId }) {
 
     console.log(comments);
-    const newComment = new CommentForm;
     const opt = { month: 'short', day: 'numeric', year: 'numeric' };
     const showComment = comments.map((c) =>
 
@@ -170,7 +169,7 @@ function RenderComments({ comments }) {
                     {showComment}
                 </ul>
 
-                <CommentForm />
+                <CommentForm dishId={dishId} addComment={addComment} />
             </div>
 
         );
@@ -184,8 +183,25 @@ function RenderComments({ comments }) {
 }
 
 const DishDetail = (props) => {
+    if (props.isLoading) {
+        return (
+            <div className="container">
+                <div className="row">
+                    <Loading />
+                </div>
+            </div>
+        );
 
-    if (props.dish !== undefined) {
+    } else if (props.errMess) {
+        return (
+            <div className="container">
+                <div className="row">
+                    <h4>{props.errMess}</h4>
+                </div>
+            </div>
+        );
+        
+    } else if (props.dish !== undefined) {
         return (
             <div className="container">
 
@@ -202,7 +218,10 @@ const DishDetail = (props) => {
 
                 <div className="row">
                     <RenderDish dish={props.dish} />
-                    <RenderComments comments={props.comments} />
+                    <RenderComments comments={props.comments}
+                        addComment={props.addComment}
+                        dishId={props.dish.id}
+                    />
                 </div>
             </div>
         )
