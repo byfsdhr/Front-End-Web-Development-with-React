@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 import { Control, Errors, LocalForm } from 'react-redux-form';
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
+import { FadeTransform, Fade, Stagger } from 'react-animation-components';
+
 
 
 const required = (val) => val && val.length;
@@ -136,13 +138,20 @@ function RenderDish({ dish }) {
 
     return (
         <div className="col-12 col-md-5 mt-1">
-            <Card >
-                <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name} />
-                <CardBody>
-                    <CardTitle>{dish.name}</CardTitle>
-                    <CardText>{dish.description}</CardText>
-                </CardBody>
-            </Card>
+            <FadeTransform
+                in
+                transformProps={{
+                    exitTransform: 'scale(0.5) translateY(-50%)'
+                }}>
+                <Card >
+                    <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name} />
+                    <CardBody>
+                        <CardTitle>{dish.name}</CardTitle>
+                        <CardText>{dish.description}</CardText>
+                    </CardBody>
+                </Card>
+            </FadeTransform>
+
         </div>
     )
 }
@@ -154,11 +163,12 @@ function RenderComments({ comments, postComment, dishId }) {
     const showComment = comments.map((c) =>
 
 
-
-        <div key={c.id}>
-            <li className="mb-3">{c.comment}</li>
-            <li className="mb-3">-- {c.author}, {new Date(c.date).toLocaleDateString('default', opt)}</li>
-        </div >
+        <Fade in>
+            <div key={c.id}>
+                <li className="mb-3">{c.comment}</li>
+                <li className="mb-3">-- {c.author}, {new Date(c.date).toLocaleDateString('default', opt)}</li>
+            </div >
+        </Fade>
 
     );
 
@@ -167,9 +177,14 @@ function RenderComments({ comments, postComment, dishId }) {
 
             <div className="col-12 col-md-5 mt-1">
                 <h4>Comments</h4>
+
                 <ul className="list-unstyled">
-                    {showComment}
+                    <Stagger in>
+                        {showComment}
+                    </Stagger>
                 </ul>
+
+
 
                 <CommentForm dishId={dishId} postComment={postComment} />
             </div>
@@ -202,7 +217,7 @@ const DishDetail = (props) => {
                 </div>
             </div>
         );
-        
+
     } else if (props.dish !== undefined) {
         return (
             <div className="container">
